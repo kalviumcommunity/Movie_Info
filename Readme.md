@@ -73,4 +73,3 @@ This project is licensed under the MIT License.
 👨‍💻 Author
 Pardeep Swami
 mr.swami0094@gmail.com
-GitHub Profile
