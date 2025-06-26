@@ -1,6 +1,6 @@
-# 🎬 Rock&Show – Movies Information App
+# 🎬 Movie_Info – Movies Information App
 
-**Rock&Show** is a frontend web application that allows users to search, browse, and explore movie details using the **OMDb API**. It features dynamic movie listing, genre-based filtering, and a favorites section – all wrapped in a simple, responsive interface.
+**Movie_Info** is a frontend web application that allows users to search, browse, and explore movie details using the **OMDb API**. It features dynamic movie listing, genre-based filtering, and a favorites section – all wrapped in a simple, responsive interface.
 
 ---
 
