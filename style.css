@@ -71,7 +71,7 @@ body {
   .movie-results {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    gap: 30px;
     margin-top: 20px;
   }
   
@@ -98,6 +98,33 @@ body {
     text-align: center;
     font-size: 1.1rem;
   }
+  /* Filter Section Styling */
+.filter-section {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.filter-section label {
+  font-size: 1rem;
+  margin-right: 10px;
+  color: #fff;
+}
+
+#movieCategory {
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: 1px solid #e50914;
+  border-radius: 5px;
+  background-color: #222;
+  color: white;
+  cursor: pointer;
+}
+
+#movieCategory option {
+  background-color: #222;
+  color: white;
+}
+
   
   footer {
     text-align: center;
