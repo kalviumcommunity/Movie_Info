@@ -1,66 +1,85 @@
-const apiKey = '5b3b774b'; // Your OMDb API key
+const apiKey = "5b3b774b";
 let currentPage = 1;
+let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
-// Fetch featured movies
-async function fetchFeaturedMovies() {
-  const latestYear = "2025"; // Change as needed
-  const response = await fetch(
-    `https://www.omdbapi.com/?s=movie&type=movie&y=${latestYear}&apikey=${apiKey}`
-  );
-  const data = await response.json();
-  if (data.Response === "True") {
-    displayFeaturedMovies(data.Search);
-  }
+function createMovieCard(movie) {
+  const isFav = favorites.some((f) => f.imdbID === movie.imdbID);
+  return `
+    <div class="movie-card">
+      <img src="${movie.Poster}" alt="${movie.Title}" />
+      <h3>${movie.Title}</h3>
+      <button class="fav-btn" onclick="toggleFavorite('${movie.imdbID}')">
+        <i class="fas fa-heart" style="color:${isFav ? "red" : "white"};"></i>
+      </button>
+    </div>
+  `;
 }
 
-// Display featured movies
+// Display functions
 function displayFeaturedMovies(movies) {
   const featuredSection = document.getElementById("featuredMovies");
-  featuredSection.innerHTML = movies.map(movie => `
-    <div class="movie-card">
-      <img src="${movie.Poster}" alt="${movie.Title}" />
-      <h3>${movie.Title}</h3>
-    </div>
-  `).join('');
+  featuredSection.innerHTML = movies.slice(0, 7).map(createMovieCard).join("");
 }
 
-// Fetch movies by search query
-async function fetchMovies(query, page = 1) {
-  const response = await fetch(`https://www.omdbapi.com/?s=${query}&page=${page}&apikey=${apiKey}`);
-  const data = await response.json();
-  if (data.Response === "True") {
-    displayMovies(data.Search);
-  } else {
-    displayError("No movies found.");
-  }
-}
-
-// Display movies in main section
 function displayMovies(movies) {
-  const movieResults = document.getElementById("movieResults");
-  movieResults.innerHTML += movies.map(movie => `
-    <div class="movie-card">
-      <img src="${movie.Poster}" alt="${movie.Title}" />
-      <h3>${movie.Title}</h3>
-    </div>
-  `).join('');
+  const results = document.getElementById("movieResults");
+  results.innerHTML += movies.map(createMovieCard).join("");
 }
 
-// Fetch movies by category
-async function fetchMoviesByCategory(category) {
-  const response = await fetch(`https://www.omdbapi.com/?s=${category}&apikey=${apiKey}`);
+function displayFavorites() {
+  const favSection = document.getElementById("favoritesSection");
+  favSection.innerHTML = favorites.map(createMovieCard).join("");
+}
+
+// API functions
+async function fetchFeaturedMovies() {
+  const response = await fetch(
+    `https://www.omdbapi.com/?s=movie&y=2025&type=movie&apikey=${apiKey}`
+  );
   const data = await response.json();
-  if (data.Response === "True") {
-    document.getElementById("movieResults").innerHTML = ""; // reset
-    displayMovies(data.Search);
-  } else {
-    displayError("No movies found for this category.");
-  }
+  if (data.Response === "True") displayFeaturedMovies(data.Search);
 }
 
-// Display error
-function displayError(message) {
-  document.getElementById("movieResults").innerHTML = `<p class="error">${message}</p>`;
+async function fetchMovies(query, page = 1) {
+  const response = await fetch(
+    `https://www.omdbapi.com/?s=${query}&page=${page}&apikey=${apiKey}`
+  );
+  const data = await response.json();
+  if (data.Response === "True") displayMovies(data.Search);
+}
+
+async function fetchMoviesByCategory(category) {
+  const response = await fetch(
+    `https://www.omdbapi.com/?s=${category}&apikey=${apiKey}`
+  );
+  const data = await response.json();
+  document.getElementById("movieResults").innerHTML = "";
+  if (data.Response === "True") displayMovies(data.Search);
+  else displayError("No movies found for this category.");
+}
+
+function displayError(msg) {
+  document.getElementById(
+    "movieResults"
+  ).innerHTML = `<p class="error">${msg}</p>`;
+}
+
+// Favorites handler
+function toggleFavorite(imdbID) {
+  fetch(`https://www.omdbapi.com/?i=${imdbID}&apikey=${apiKey}`)
+    .then((res) => res.json())
+    .then((movie) => {
+      const index = favorites.findIndex((f) => f.imdbID === imdbID);
+      if (index !== -1) {
+        favorites.splice(index, 1);
+      } else {
+        favorites.push(movie);
+      }
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+      displayFavorites();
+      document.getElementById("movieResults").innerHTML = "";
+      fetchMoviesByCategory(document.getElementById("movieCategory").value);
+    });
 }
 
 // Event listeners
@@ -85,8 +104,9 @@ document.getElementById("movieCategory").addEventListener("change", (e) => {
   fetchMoviesByCategory(e.target.value);
 });
 
-// On page load
+// On load
 document.addEventListener("DOMContentLoaded", () => {
   fetchFeaturedMovies();
-  fetchMoviesByCategory("action"); // default
+  fetchMoviesByCategory("action");
+  displayFavorites();
 });
