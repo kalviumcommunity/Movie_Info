@@ -4,10 +4,12 @@ let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
 function createMovieCard(movie) {
   const isFav = favorites.some((f) => f.imdbID === movie.imdbID);
+  const note = movie.note ? `<p class="movie-note">${movie.note}</p>` : "";
   return `
     <div class="movie-card">
       <img src="${movie.Poster}" alt="${movie.Title}" />
       <h3>${movie.Title}</h3>
+      ${note}
       <button class="fav-btn" onclick="toggleFavorite('${movie.imdbID}')">
         <i class="fas fa-heart" style="color:${isFav ? "red" : "white"};"></i>
       </button>
@@ -15,7 +17,6 @@ function createMovieCard(movie) {
   `;
 }
 
-// Display functions
 function displayFeaturedMovies(movies) {
   const featuredSection = document.getElementById("featuredMovies");
   featuredSection.innerHTML = movies.slice(0, 7).map(createMovieCard).join("");
@@ -31,7 +32,6 @@ function displayFavorites() {
   favSection.innerHTML = favorites.map(createMovieCard).join("");
 }
 
-// API functions
 async function fetchFeaturedMovies() {
   const response = await fetch(
     `https://www.omdbapi.com/?s=movie&y=2025&type=movie&apikey=${apiKey}`
@@ -64,7 +64,6 @@ function displayError(msg) {
   ).innerHTML = `<p class="error">${msg}</p>`;
 }
 
-// Favorites handler
 function toggleFavorite(imdbID) {
   fetch(`https://www.omdbapi.com/?i=${imdbID}&apikey=${apiKey}`)
     .then((res) => res.json())
@@ -81,8 +80,34 @@ function toggleFavorite(imdbID) {
       fetchMoviesByCategory(document.getElementById("movieCategory").value);
     });
 }
+function updateFavoriteByTitle(title, updateObj) {
+  const index = favorites.findIndex(
+    (movie) => movie.Title.toLowerCase() === title.toLowerCase()
+  );
 
-// Event listeners
+  if (index !== -1) {
+    favorites[index] = { ...favorites[index], ...updateObj };
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    displayFavorites();
+    alert(`Updated movie "${title}" successfully!`);
+  } else {
+    alert(`No favorite movie found with the title "${title}".`);
+  }
+}
+
+
+function handleUpdate() {
+  const title = document.getElementById("movieTitleInput").value.trim();
+  const newNote = document.getElementById("newNoteInput").value.trim();
+
+  if (title && newNote) {
+    updateFavoriteByTitle(title, { note: newNote });
+  } else {
+    alert("Please enter both title and note.");
+  }
+}
+
+
 document.getElementById("searchButton").addEventListener("click", () => {
   const query = document.getElementById("searchInput").value.trim();
   if (query) {
@@ -104,7 +129,6 @@ document.getElementById("movieCategory").addEventListener("change", (e) => {
   fetchMoviesByCategory(e.target.value);
 });
 
-// On load
 document.addEventListener("DOMContentLoaded", () => {
   fetchFeaturedMovies();
   fetchMoviesByCategory("action");
