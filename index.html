@@ -21,8 +21,9 @@
     <main>
         <section class="featured">
             <h2>Featured Movies</h2>
-            <div id="featuredMovies" class="movie-results scroll-container"></div>
+            <div class="scroll-container" id="featuredMovies"></div>
         </section>
+          
         <section class="filter-section">
             <label for="movieCategory">Select Movie Type:</label>
             <select id="movieCategory">
@@ -37,17 +38,19 @@
         </section>
         <section class="all-movies">
             <h2>Your Movies</h2>
-            <div id="movieResults" class="movie-results"></div>
+            <!-- <div id="movieResults" class="movie-results"></div> -->
+            <div class="scroll-container" id="movieResults"></div>
         </section>
         <section class="favorites">
             <h2>Your Favorite Movies</h2>
-            <div id="favoritesSection" class="movie-results"></div>
+            <!-- <div id="favoritesSection" class="movie-results"></div> -->
+            <div class="scroll-container" id="favoritesSection" ></div>
         </section>
         <div class="update-section">
             <h3>Update Movie Note</h3>
             <input type="text" id="movieTitleInput" placeholder="Enter movie title" />
             <input type="text" id="newNoteInput" placeholder="Enter new note" />
-            <button onclick="handleUpdate()">Update Note</button>
+            <button id="searchButton" onclick="handleUpdate()">Update Note</button>
         </div>
           
           

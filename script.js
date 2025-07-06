@@ -19,7 +19,7 @@ function createMovieCard(movie) {
 
 function displayFeaturedMovies(movies) {
   const featuredSection = document.getElementById("featuredMovies");
-  featuredSection.innerHTML = movies.slice(0, 7).map(createMovieCard).join("");
+  featuredSection.innerHTML = movies.slice(0, 20).map(createMovieCard).join("");
 }
 
 function displayMovies(movies) {
@@ -113,17 +113,19 @@ document.getElementById("searchButton").addEventListener("click", () => {
   if (query) {
     document.getElementById("movieResults").innerHTML = "";
     currentPage = 1;
+    lastSearchQuery = query; // Save for later
     fetchMovies(query, currentPage);
   }
+
 });
 
 document.getElementById("loadMoreButton").addEventListener("click", () => {
-  const query = document.getElementById("searchInput").value.trim();
-  if (query) {
+  if (lastSearchQuery) {
     currentPage++;
-    fetchMovies(query, currentPage);
+    fetchMovies(lastSearchQuery, currentPage);
   }
 });
+
 
 document.getElementById("movieCategory").addEventListener("change", (e) => {
   fetchMoviesByCategory(e.target.value);
@@ -134,3 +136,21 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchMoviesByCategory("action");
   displayFavorites();
 });
+function createMovieCard(movie) {
+  const isFav = favorites.some((f) => f.imdbID === movie.imdbID);
+  const note = movie.note ? `<p class="movie-note">${movie.note}</p>` : "";
+  return `
+    <div class="movie-card">
+      <a href="details.html?id=${movie.imdbID}">
+        <img src="${movie.Poster}" alt="${movie.Title}" />
+        <h3>${movie.Title}</h3>
+      </a>
+      ${note}
+      <button class="fav-btn" onclick="event.preventDefault(); toggleFavorite('${
+        movie.imdbID
+      }')">
+        <i class="fas fa-heart" style="color:${isFav ? "red" : "white"};"></i>
+      </button>
+    </div>
+  `;
+}
